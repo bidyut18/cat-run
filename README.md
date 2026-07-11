@@ -27,19 +27,19 @@ npm install -g uni-run
 
 ## Usage
 
-# Run any script defined in package.json
+### Run any script defined in package.json
 
 uni-run dev
 uni-run build --watch
 
-# Install dependencies using the detected package manager
+### Install dependencies using the detected package manager
 
 uni-run --install
 
-# List available scripts beautifully formatted
+### List available scripts beautifully formatted
 
 uni-run --list
 
-# Show the detected package manager without executing anything
+### Show the detected package manager without executing anything
 
 uni-run --detect
