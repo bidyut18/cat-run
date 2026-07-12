@@ -1,5 +1,5 @@
 {
-  "name": "cat-run",
+  "name": "@bidyut26/cat-run",
   "version": "0.0.1",
   "description": "Universal package manager script runner — fast Go binary distributed via npm",
   "main": "index.js",
@@ -13,11 +13,11 @@
     "LICENSE"
   ],
   "optionalDependencies": {
-    "cat-run-darwin-x64": "0.0.1",
-    "cat-run-darwin-arm64": "0.0.1",
-    "cat-run-linux-x64": "0.0.1",
-    "cat-run-linux-arm64": "0.0.1",
-    "cat-run-win32-x64": "0.0.1"
+    "@bidyut26/cat-run-darwin-x64": "0.0.1",
+    "@bidyut26/cat-run-darwin-arm64": "0.0.1",
+    "@bidyut26/cat-run-linux-x64": "0.0.1",
+    "@bidyut26/cat-run-linux-arm64": "0.0.1",
+    "@bidyut26/cat-run-win32-x64": "0.0.1"
   },
   "keywords": [
     "cli",
@@ -41,5 +41,8 @@
   "homepage": "https://github.com/bidyut18/cat-run#readme",
   "engines": {
     "node": ">=16"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

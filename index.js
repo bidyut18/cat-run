@@ -10,7 +10,7 @@ const binaryName = platform === 'win32' ? 'cat-run.exe' : 'cat-run';
 
 function getBinaryPath() {
   // 1. Try platform-specific optional dependency
-  const platformPkg = `cat-run-${platform}-${arch}`;
+  const platformPkg = `@bidyut26/cat-run-${platform}-${arch}`;
   try {
     const pkgPath = require.resolve(`${platformPkg}/package.json`);
     const pkgDir = path.dirname(pkgPath);

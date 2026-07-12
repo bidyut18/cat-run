@@ -16,6 +16,7 @@
 const fs = require("fs");
 const path = require("path");
 
+const NPM_SCOPE = "@bidyut26";              
 const rootPkg = require("../package.json");
 const version = rootPkg.version;
 
@@ -34,11 +35,13 @@ const npmDir = path.join(__dirname, "..", "npm");
 const binDir = path.join(__dirname, "..", "bin");
 
 let missingCount = 0;
+const optionalDeps = {};
 
 // ---- 1. Create platform packages ----
 for (const target of targets) {
-  const pkgName = `cat-run-${target.platform}-${target.arch}`;
-  const pkgDir = path.join(npmDir, pkgName);
+  const pkgName = `${NPM_SCOPE}/cat-run-${target.platform}-${target.arch}`;
+  const dirName = `cat-run-${target.platform}-${target.arch}`;
+  const pkgDir = path.join(npmDir, dirName);
   fs.mkdirSync(pkgDir, { recursive: true });
 
   const binaryName = target.platform === "win32" ? "cat-run.exe" : "cat-run";
@@ -58,18 +61,21 @@ for (const target of targets) {
 
   const pkgJson = {
     name: pkgName,
-    version: version, // use root version
+    version: version,
     description: `cat-run binary for ${target.platform}-${target.arch}`,
     author,
     os: [target.platform],
     cpu: [target.arch],
-    files: [binaryName],
+    files: [binaryName, "README.md"],
     license: "MIT",
     repository: {
       type: "git",
       url: `${repoUrl}.git`,
     },
     homepage: repoUrl,
+    publishConfig: {
+      access: "public"
+    }
   };
 
   fs.writeFileSync(
@@ -77,6 +83,11 @@ for (const target of targets) {
     JSON.stringify(pkgJson, null, 2) + "\n",
   );
 
+  // README.md required to avoid npm spam detection
+  const readme = `# ${pkgName}\n\nPlatform-specific binary for [cat-run](${repoUrl}) on ${target.platform} ${target.arch}.\n`;
+  fs.writeFileSync(path.join(pkgDir, "README.md"), readme);
+
+  optionalDeps[pkgName] = version;
   console.log(`✅  Created ${pkgName} (v${version})`);
 }
 
@@ -90,17 +101,17 @@ function createMainWrapper() {
   const mainDir = path.join(npmDir, "cat-run");
   fs.mkdirSync(mainDir, { recursive: true });
 
-  // (Optional) copy index.js and bin folder if not present
-  // but we assume they exist in the repo already.
   const srcIndex = path.join(__dirname, "..", "index.js");
   if (fs.existsSync(srcIndex)) {
     fs.copyFileSync(srcIndex, path.join(mainDir, "index.js"));
+    fs.chmodSync(path.join(mainDir, "index.js"), 0o755);
     console.log("✅  Copied index.js");
   } else {
     console.warn(
       "⚠️  index.js not found at project root; make sure to place it there.",
     );
   }
+
   const pkgJson = {
     name: "cat-run",
     version: version,
@@ -108,14 +119,8 @@ function createMainWrapper() {
       "Universal package manager script runner — fast Go binary distributed via npm",
     main: "index.js",
     bin: { "cat-run": "index.js" },
-    files: ["index.js", "bin", "README.md", "LICENSE"],
-    optionalDependencies: {
-      "cat-run-darwin-x64": version,
-      "cat-run-darwin-arm64": version,
-      "cat-run-linux-x64": version,
-      "cat-run-linux-arm64": version,
-      "cat-run-win32-x64": version,
-    },
+    files: ["index.js", "README.md", "LICENSE"],
+    optionalDependencies: optionalDeps,
     keywords: [
       "cli",
       "package-manager",
@@ -135,6 +140,9 @@ function createMainWrapper() {
     bugs: { url: `${repoUrl}/issues` },
     homepage: `${repoUrl}#readme`,
     engines: { node: ">=16" },
+    publishConfig: {
+      access: "public"
+    }
   };
 
   fs.writeFileSync(
