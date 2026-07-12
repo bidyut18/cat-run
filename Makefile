@@ -7,13 +7,15 @@ BIN_DIR     := ./bin
 LDFLAGS := -s -w
 GOFLAGS := -buildvcs=false
 
-# platform: GOOS, arch: Node os.arch(), goarch: GOARCH
+# Format: dir_name|go_os|go_arch|binary_name
+# dir_name uses Node.js os.platform() / os.arch() naming
+# go_os / go_arch use Go's naming
 TARGETS := \
-	"darwin|x64|amd64" \
-	"darwin|arm64|arm64" \
-	"linux|x64|amd64" \
-	"linux|arm64|arm64" \
-	"win32|x64|amd64"
+	"darwin-x64|darwin|amd64|cat-run" \
+	"darwin-arm64|darwin|arm64|cat-run" \
+	"linux-x64|linux|amd64|cat-run" \
+	"linux-arm64|linux|arm64|cat-run" \
+	"win32-x64|windows|amd64|cat-run.exe"
 
 .PHONY: all build build-all test clean package-npm publish-dry
 
@@ -25,17 +27,14 @@ build:
 build-all: clean-bin
 	@mkdir -p $(BIN_DIR)
 	@for target in $(TARGETS); do \
-		platform=$$(echo $$target | cut -d'|' -f1); \
-		node_arch=$$(echo $$target | cut -d'|' -f2); \
-		go_arch=$$(echo $$target | cut -d'|' -f3); \
-		OUT_DIR=$(BIN_DIR)/$$platform-$$node_arch; \
+		dir=$$(echo $$target | cut -d'|' -f1); \
+		goos=$$(echo $$target | cut -d'|' -f2); \
+		goarch=$$(echo $$target | cut -d'|' -f3); \
+		bin=$$(echo $$target | cut -d'|' -f4); \
+		OUT_DIR=$(BIN_DIR)/$$dir; \
 		mkdir -p $$OUT_DIR; \
-		if [ "$$platform" = "win32" ]; then \
-			GOOS=$$platform GOARCH=$$go_arch GOFLAGS=$(GOFLAGS) go build -ldflags="$(LDFLAGS)" -o $$OUT_DIR/$(BINARY_NAME).exe $(SRC_DIR); \
-		else \
-			GOOS=$$platform GOARCH=$$go_arch GOFLAGS=$(GOFLAGS) go build -ldflags="$(LDFLAGS)" -o $$OUT_DIR/$(BINARY_NAME) $(SRC_DIR); \
-		fi; \
-		echo "✅  $$platform/$$node_arch (GOARCH=$$go_arch)"; \
+		GOOS=$$goos GOARCH=$$goarch GOFLAGS=$(GOFLAGS) go build -ldflags="$(LDFLAGS)" -o $$OUT_DIR/$$bin $(SRC_DIR); \
+		echo "✅  $$dir (GOOS=$$goos GOARCH=$$goarch)"; \
 	done
 
 test:
