@@ -3,8 +3,11 @@ name: Publish to npm
 on:
   push:
     tags:
-      - 'v*'             # e.g. v0.0.1, v1.2.3
-  workflow_dispatch:     
+      - "v*"
+    branches:
+      - master
+      - main
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -31,6 +34,11 @@ jobs:
 
       - name: Package npm tarballs
         run: make package-npm
+
+      - name: Setup npm authentication
+        run: echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish platform packages first
       - name: Publish platform specific packages
