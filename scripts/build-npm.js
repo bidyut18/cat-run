@@ -19,13 +19,12 @@ const AUTHOR        = "Bidyut Mahanta <bidyutmahanta7768@outlook.com>";
 const rootPkg = require("../package.json");
 const VERSION = rootPkg.version;
 
-// Map Go build output dirs → Node os.platform() / os.arch()
 const TARGETS = [
-  { platform: "darwin",  arch: "x64",  binDir: "darwin-amd64",  bin: "cat-run"      },
-  { platform: "darwin",  arch: "arm64", binDir: "darwin-arm64",  bin: "cat-run"      },
-  { platform: "linux",   arch: "x64",  binDir: "linux-amd64",   bin: "cat-run"      },
-  { platform: "linux",   arch: "arm64", binDir: "linux-arm64",   bin: "cat-run"      },
-  { platform: "win32",   arch: "x64",  binDir: "windows-amd64", bin: "cat-run.exe"  },
+  { platform: "darwin", arch: "x64",  binDir: "darwin-x64",   bin: "cat-run"      },
+  { platform: "darwin", arch: "arm64", binDir: "darwin-arm64",  bin: "cat-run"      },
+  { platform: "linux",  arch: "x64",  binDir: "linux-x64",    bin: "cat-run"      },
+  { platform: "linux",  arch: "arm64", binDir: "linux-arm64",   bin: "cat-run"      },
+  { platform: "win32",  arch: "x64",  binDir: "win32-x64",    bin: "cat-run.exe"  },
 ];
 
 // ─── PATHS ──────────────────────────────────────────────
