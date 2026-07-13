@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 vars:
   BINARY_NAME: star-run
@@ -8,7 +8,7 @@ vars:
     sh: node -p "require('./package.json').version" 2>/dev/null || echo "dev"
   LDFLAGS: -s -w -X main.version={{.VERSION}}
   # Windows needs .exe; Unix does not.
-  EXT: '{{if eq OS "windows"}}.exe{{end}}'
+  EXT: '{{if eq .OS "windows"}}.exe{{end}}'
 
 env:
   GOFLAGS: -buildvcs=false
@@ -22,11 +22,11 @@ tasks:
   build:
     desc: Build the binary for the current host platform
     sources:
-      - '{{.SRC_DIR}}/**/*.go'
+      - "{{.SRC_DIR}}/**/*.go"
       - go.mod
       - go.sum
     generates:
-      - '{{.BIN_DIR}}/{{.BINARY_NAME}}{{.EXT}}'
+      - "{{.BIN_DIR}}/{{.BINARY_NAME}}{{.EXT}}"
     cmds:
       - mkdir -p {{.BIN_DIR}}
       - go build -ldflags="{{.LDFLAGS}}" -o {{.BIN_DIR}}/{{.BINARY_NAME}}{{.EXT}} {{.SRC_DIR}}
@@ -36,6 +36,8 @@ tasks:
     deps: [clean-bin]
     cmds:
       - task: build-target
+        vars:
+          TARGET: "{{.ITEM}}" # Converts the 'any' type item into a explicit string primitive
         for:
           - darwin-x64|darwin|amd64|star-run
           - darwin-arm64|darwin|arm64|star-run
@@ -46,20 +48,19 @@ tasks:
   build-target:
     internal: true
     vars:
-      PARTS: '{{splitList "|" .ITEM}}'
-      DIR: '{{index .PARTS 0}}'
-      GOOS: '{{index .PARTS 1}}'
-      GOARCH: '{{index .PARTS 2}}'
-      BIN: '{{index .PARTS 3}}'
+      # Runs the split inline so it correctly extracts the text slice
+      DIR: '{{index (splitList "|" .TARGET) 0}}'
+      GOOS: '{{index (splitList "|" .TARGET) 1}}'
+      GOARCH: '{{index (splitList "|" .TARGET) 2}}'
+      BIN: '{{index (splitList "|" .TARGET) 3}}'
     env:
-      GOOS: '{{.GOOS}}'
-      GOARCH: '{{.GOARCH}}'
+      GOOS: "{{.GOOS}}"
+      GOARCH: "{{.GOARCH}}"
     cmds:
       - echo "Building {{.DIR}} (GOOS={{.GOOS}} GOARCH={{.GOARCH}})..."
       - mkdir -p {{.BIN_DIR}}/{{.DIR}}
       - go build -ldflags="{{.LDFLAGS}}" -o {{.BIN_DIR}}/{{.DIR}}/{{.BIN}} {{.SRC_DIR}}
       - echo "✅ {{.DIR}}"
-
   test:
     desc: Run project tests
     cmds:
@@ -90,7 +91,7 @@ tasks:
         for dir in npm/star-run-*/ npm/star-run/; do
           if [ -d "$dir" ]; then
             echo "Dry-running publish for $dir..."
-            (cd "$dir" && npm publish --dry-run)
+            (cd "$dir" && npm publish --dry-run --tag next)
           fi
         done
 

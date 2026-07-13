@@ -2,15 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-// ─── CONFIG ─────────────────────────────────────────────
-const NPM_SCOPE   = "@bidyut26";
-const GITHUB_USER = "bidyut18";
-const REPO        = `${GITHUB_USER}/star-run`;
-const REPO_URL    = `https://github.com/${REPO}`;
-const AUTHOR      = "Bidyut Mahanta <bidyutmahanta7768@outlook.com>";
-
 const rootPkg = require("../package.json");
-const VERSION = rootPkg.version;
+
+const NPM_SCOPE = "@bidyut26";
+const VERSION   = rootPkg.version;
 
 const TARGETS = [
   { platform: "darwin", arch: "x64",  binDir: "darwin-x64",   bin: "star-run"      },
@@ -68,27 +63,28 @@ for (const t of TARGETS) {
   }
 
   copyExecutable(srcBin, dstBin);
-
   const checksum = sha256(dstBin);
 
+  // Derive platform package metadata from rootPkg
   writeJson(path.join(pkgDir, "package.json"), {
     name: pkgName,
     version: VERSION,
-    description: `star-run binary for ${t.platform} ${t.arch}`,
-    author: AUTHOR,
-    license: "MIT",
+    description: `Platform-specific binary for ${rootPkg.name} on ${t.platform} ${t.arch}`,
+    author: rootPkg.author,
+    license: rootPkg.license,
     os: [t.platform],
     cpu: [t.arch],
     files: [t.bin, "README.md"],
-    repository: { type: "git", url: `${REPO_URL}.git` },
-    homepage: REPO_URL,
+    repository: rootPkg.repository,
+    homepage: rootPkg.homepage,
+    bugs: rootPkg.bugs,
     publishConfig: { access: "public" },
     starRunChecksum: checksum,
   });
 
   fs.writeFileSync(
     path.join(pkgDir, "README.md"),
-    `# ${pkgName}\n\nPlatform-specific binary for [star-run](${REPO_URL}) on ${t.platform} ${t.arch}.\n`
+    `# ${pkgName}\n\nPlatform-specific binary for [${rootPkg.name}](${rootPkg.homepage}) on ${t.platform} ${t.arch}.\n`
   );
 
   optionalDeps[pkgName] = VERSION;
@@ -96,7 +92,7 @@ for (const t of TARGETS) {
 }
 
 if (missing > 0) {
-  console.error(`\n❌ ${missing} binary(s) missing. Run: make build-all`);
+  console.error(`\n❌ ${missing} binary(s) missing. Run: task build-all`);
   process.exit(1);
 }
 
@@ -118,23 +114,24 @@ for (const file of ["README.md", "LICENSE"]) {
   if (fs.existsSync(src)) fs.copyFileSync(src, path.join(mainDir, file));
 }
 
+// Inherit the wrapper package metadata directly from rootPkg
 writeJson(path.join(mainDir, "package.json"), {
-  name: "star-run",
-  version: VERSION,
-  description: "Universal package manager script runner — fast Go binary distributed via npm",
-  main: "index.js",
-  bin: { "star-run": "index.js" },
-  files: ["index.js", "README.md", "LICENSE"],
+  name: rootPkg.name,
+  version: rootPkg.version,
+  description: rootPkg.description,
+  main: rootPkg.main,
+  bin: rootPkg.bin,
+  files: rootPkg.files,
   optionalDependencies: optionalDeps,
-  keywords: ["cli", "package-manager", "npm", "yarn", "pnpm", "bun", "runner", "go"],
-  author: AUTHOR,
-  license: "MIT",
-  repository: { type: "git", url: `${REPO_URL}.git` },
-  bugs: { url: `${REPO_URL}/issues` },
-  homepage: `${REPO_URL}#readme`,
-  engines: { node: ">=16" },
+  keywords: rootPkg.keywords,
+  author: rootPkg.author,
+  license: rootPkg.license,
+  repository: rootPkg.repository,
+  bugs: rootPkg.bugs,
+  homepage: rootPkg.homepage,
+  engines: rootPkg.engines,
   publishConfig: { access: "public" },
 });
 
-console.log(`✅  star-run wrapper (v${VERSION})`);
+console.log(`✅  ${rootPkg.name} wrapper (v${VERSION})`);
 console.log("\n📦 Publish order: platform packages → star-run wrapper");
