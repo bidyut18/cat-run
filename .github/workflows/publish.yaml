@@ -2,8 +2,8 @@ name: Publish to npm
 
 on:
   push:
-    branches:
-      - release
+    tags:
+        - "v*"
   workflow_dispatch:
 
 jobs:
@@ -14,12 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Crucial: fetches full history so git can inspect tracking branches
+          fetch-depth: 0 
 
       - name: Verify Tag Exists on Release Branch
         id: branch-filter
         run: |
-          # Query the remote tracking branches to see if origin/release owns this tag's commit
           if git branch -r --contains ${{ github.ref_name }} | grep -q 'origin/release'; then
             echo "Target tag belongs to the release branch. Proceeding."
             echo "is_release=true" >> $GITHUB_OUTPUT
@@ -39,7 +38,7 @@ jobs:
         if: steps.branch-filter.outputs.is_release == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "25"
           cache: "npm"
 
       - name: Install Task
