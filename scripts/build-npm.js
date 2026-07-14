@@ -114,7 +114,6 @@ for (const file of ["README.md", "LICENSE"]) {
   if (fs.existsSync(src)) fs.copyFileSync(src, path.join(mainDir, file));
 }
 
-// Inherit the wrapper package metadata directly from rootPkg
 writeJson(path.join(mainDir, "package.json"), {
   name: rootPkg.name,
   version: rootPkg.version,

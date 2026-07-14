@@ -10,11 +10,8 @@ import (
 	"strings"
 )
 
-// PackageLocator walks the filesystem upward looking for package.json.
 type PackageLocator struct{}
 
-// Find returns the absolute path to the nearest package.json starting at startDir.
-// If stopDir is non-empty, the search stops at that directory (inclusive).
 func (l PackageLocator) Find(startDir, stopDir string) (string, error) {
 	if startDir == "" {
 		return "", fmt.Errorf("startDir cannot be empty: %w", os.ErrInvalid)
@@ -53,10 +50,8 @@ func (l PackageLocator) Find(startDir, stopDir string) (string, error) {
 	}
 }
 
-// PackageReader handles I/O and JSON decoding.
 type PackageReader struct{}
 
-// Read decodes the package.json at the given path.
 func (r PackageReader) Read(path string) (PackageJSON, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -72,12 +67,10 @@ func (r PackageReader) Read(path string) (PackageJSON, error) {
 	return pkg, nil
 }
 
-// ScriptRenderer writes the formatted script list to an io.Writer.
 type ScriptRenderer struct {
 	Writer io.Writer
 }
 
-// Render produces the formatted script list.
 func (r ScriptRenderer) Render(pm PackageManager, scripts []Script) error {
 	if len(scripts) == 0 {
 		_, err := fmt.Fprintln(r.Writer, "No scripts found in package.json.")
@@ -108,14 +101,12 @@ func (r ScriptRenderer) Render(pm PackageManager, scripts []Script) error {
 	return err
 }
 
-// ScriptService orchestrates the workflow: locate → parse → render.
 type ScriptService struct {
 	Locator  PackageLocator
 	Reader   PackageReader
 	Renderer ScriptRenderer
 }
 
-// ListScripts executes the full pipeline.
 func (s *ScriptService) ListScripts(startDir string, pm PackageManager, stopDir string) error {
 	pkgPath, err := s.Locator.Find(startDir, stopDir)
 	if err != nil {
@@ -139,7 +130,6 @@ func (s *ScriptService) ListScripts(startDir string, pm PackageManager, stopDir 
 	return s.Renderer.Render(pm, scripts)
 }
 
-
 func (s *ScriptService) ValidateScript(startDir, stopDir, scriptName string) error {
 	pkgPath, err := s.Locator.Find(startDir, stopDir)
 	if err != nil {
@@ -157,7 +147,6 @@ func (s *ScriptService) ValidateScript(startDir, stopDir, scriptName string) err
 	return nil
 }
 
-// listScripts is the CLI entry point. Behavior is preserved exactly.
 func listScripts(startDir string, pm PackageManager, stopDir string) {
 	svc := ScriptService{
 		Locator:  PackageLocator{},

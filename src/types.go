@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-// PackageManager identifies the package manager.
 type PackageManager string
 
 const (
@@ -34,17 +33,14 @@ func (pm PackageManager) runArgs(script string) []string {
 	return []string{"run", script}
 }
 
-// PackageJSON represents the relevant fields of a package.json file.
 type PackageJSON struct {
 	PackageManager string            `json:"packageManager"`
 	Scripts        map[string]string `json:"scripts"`
 }
 
-// Script represents a single entry from the "scripts" object.
 type Script struct {
 	Name    string
 	Command string
 }
 
-// ErrPackageNotFound is returned when the directory walk ends without finding package.json.
 var ErrPackageNotFound = fmt.Errorf("no package.json found in tree")
