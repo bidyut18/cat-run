@@ -28,42 +28,42 @@ jobs:
           fi
 
       - name: Set up Go
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         uses: actions/setup-go@v6
         with:
           go-version: "1.26.3"
           cache: false
 
       - name: Set up Node.js
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         uses: actions/setup-node@v7
         with:
           node-version: "25"
           cache: "npm"
-          
+
       - name: Upgrade npm to support staged publishing
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         run: npm install -g npm@latest
 
       - name: Install Task
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         uses: arduino/setup-task@v3
         with:
           version: 3.x
 
       - name: Package npm tarballs
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         run: task package-npm
 
       - name: Setup npm authentication
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         run: |
           echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish packages to NPM
-        if: steps.branch-filter.outputs.is_release == 'true'
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         run: |
           if [[ "${{ github.ref_name }}" == *"alpha"* ]]; then
             NPM_TAG="alpha"
