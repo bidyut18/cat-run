@@ -45,6 +45,10 @@ jobs:
         uses: arduino/setup-task@v3
         with:
           version: 3.x
+          
+      - name: Clean build artifacts
+        if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
+        run: task clean
 
       - name: Package npm tarballs
         if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
