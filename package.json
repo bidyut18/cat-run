@@ -1,6 +1,6 @@
 {
   "name": "star-run",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "description": "Universal package manager script runner for JS/TS projects — fast, zero config, distributed via npm",
   "main": "index.js",
   "bin": {
