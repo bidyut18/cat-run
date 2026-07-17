@@ -127,7 +127,7 @@ tasks:
         for dir in npm/star-run-*/ npm/star-run/; do
           if [ -d "$dir" ]; then
             echo "Publishing $dir..."
-            (cd "$dir" && npm publish --access public --tag "$NPM_TAG")
+            (cd "$dir" && npm publish --access public --tag "$NPM_TAG" --provenance)
           fi
         done
 
