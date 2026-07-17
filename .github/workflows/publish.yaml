@@ -6,10 +6,9 @@ on:
       - "v*"
   workflow_dispatch:
 
-
 permissions:
-  id-token: write  
-  contents: read    
+  id-token: write
+  contents: read
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -43,8 +42,8 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "22"
-          registry-url: 'https://registry.npmjs.org'
-          cache: false
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
 
       - name: Install Task
         if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
@@ -63,4 +62,3 @@ jobs:
       - name: Publish to npm
         if: ${{ steps.branch-filter.outputs.is_release == 'true' }}
         run: task publish
-        

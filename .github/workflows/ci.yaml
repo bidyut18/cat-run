@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [dev, release]
+    branches: [dev]
   pull_request:
-    branches: [master]
+    branches: [dev]
 
 jobs:
   test:
@@ -17,15 +17,15 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.26.3'
-          cache: false        
+          go-version: "1.26.3"
+          cache: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '26'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+          node-version: "26"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
 
       - name: Install Task
         uses: arduino/setup-task@v3
