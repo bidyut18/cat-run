@@ -1,10 +1,9 @@
 # star-run
 <div align="center">
 <picture >
-  <img src="./assets/logo.svg" alt="star-run logo" width="400" />
+  <img src="./assets/logo.jpg" alt="star-run logo" width="400" />
 </picture>
 </div>
-
 
 > **Universal package manager script runner** – fast, zero‑config, and distributed globally via npm.
 
